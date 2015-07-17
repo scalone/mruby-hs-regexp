@@ -29,10 +29,10 @@ typedef struct regexp_info {
 #define REGEXP_FLAG_MULTILINE   (1 << 2)
 #define REGEXP_FLAG_ALL (REGEXP_FLAG_IGNORECASE | REGEXP_FLAG_MULTILINE)
 
-extern regexp *regcomp(regexp_info *ri, const char *re);
-extern int regexec(regexp_info *ri, regexp *rp, const char *s);
-extern void regsub(regexp_info *ri, const regexp *rp, const char *src, char *dst);
-extern void regerror(regexp_info *ri, char *message);
+regexp *hs_regcomp(regexp_info *ri, const char *exp);
+int hs_regexec(regexp_info *ri, regexp *rp, const char *s);
+void hs_regsub(regexp_info *ri, const regexp *rp, const char *src, char *dst);
+void hs_regerror(regexp_info *ri, char *message);
 
 #endif /* HS_REGEXP_H */
 

@@ -1,5 +1,5 @@
 /*
- * regcomp and regexec -- regsub and regerror are elsewhere
+ * hs_regcomp and hs_regexec -- hs_regsub and hs_regerror are elsewhere
  */
 #include <stdio.h>
 #include <stdlib.h>
@@ -23,10 +23,10 @@
  * Regstart permit very fast decisions on suitable starting points
  * for a match, cutting down the work a lot.  Regmust permits fast rejection
  * of lines that cannot possibly match.  The regmust tests are costly enough
- * that regcomp() supplies a regmust only if the r.e. contains something
+ * that hs_regcomp() supplies a regmust only if the r.e. contains something
  * potentially expensive (at present, the only such thing detected is * or +
  * at the start of the r.e., which can involve a lot of backup).  Regmlen is
- * supplied because the test in regexec() needs it and regcomp() is computing
+ * supplied because the test in hs_regexec() needs it and hs_regcomp() is computing
  * it anyway.
  */
 
@@ -128,7 +128,7 @@ reg_strnicmp(const char *op1, const char *op2, size_t len)
 /*
  * Utility definitions.
  */
-#define	FAIL(m)		{ regerror(ri, m); return(NULL); }
+#define	FAIL(m)		{ hs_regerror(ri, m); return(NULL); }
 #define	ISREPN(c)	((c) == '*' || (c) == '+' || (c) == '?')
 #define	META		"^$.[()|?+*\\"
 
@@ -141,7 +141,7 @@ reg_strnicmp(const char *op1, const char *op2, size_t len)
 #define	WORST		0	/* Worst case. */
 
 /*
- * Work-variable struct for regcomp().
+ * Work-variable struct for hs_regcomp().
  */
 struct comp {
 	char *regparse;		/* Input-scan pointer. */
@@ -153,7 +153,7 @@ struct comp {
 #define	EMITTING(cp)	((cp)->regcode != (cp)->regdummy)
 
 /*
- * Forward declarations for regcomp()'s friends.
+ * Forward declarations for hs_regcomp()'s friends.
  */
 static char *reg(regexp_info *ri, struct comp *cp, int paren, int *flagp);
 static char *regbranch(regexp_info *ri, struct comp *cp, int *flagp);
@@ -167,7 +167,7 @@ static void regtail(regexp_info *ri, struct comp *cp, char *p, char *val);
 static void regoptail(regexp_info *ri, struct comp *cp, char *p, char *val);
 
 /*
- - regcomp - compile a regular expression into internal code
+ - hs_regcomp - compile a regular expression into internal code
  *
  * We can't allocate space until we know how big the compiled form will be,
  * but we can't compile it (and thus know how big it is) until we've got a
@@ -182,7 +182,7 @@ static void regoptail(regexp_info *ri, struct comp *cp, char *p, char *val);
  * of the structure of the compiled regexp.
  */
 regexp *
-regcomp(ri, exp)
+hs_regcomp(ri, exp)
 regexp_info *ri;
 const char *exp;
 {
@@ -192,7 +192,7 @@ const char *exp;
 	struct comp co;
 
 	if (exp == NULL)
-		FAIL("NULL argument to regcomp");
+		FAIL("NULL argument to hs_regcomp");
 
 	/* First pass: determine size, legality. */
 	co.regparse = (char *)exp;
@@ -682,11 +682,11 @@ char *val;
 }
 
 /*
- * regexec and friends
+ * hs_regexec and friends
  */
 
 /*
- * Work-variable struct for regexec().
+ * Work-variable struct for hs_regexec().
  */
 struct exec {
 	char *reginput;		/* String-input pointer. */
@@ -760,10 +760,10 @@ struct exec *ep;
 }
 
 /*
- - regexec - match a regexp against a string
+ - hs_regexec - match a regexp against a string
  */
 int
-regexec(ri, prog, str)
+hs_regexec(ri, prog, str)
 regexp_info *ri;
 register regexp *prog;
 const char *str;
@@ -774,13 +774,13 @@ const char *str;
 
 	/* Be paranoid. */
 	if (prog == NULL || string == NULL) {
-		regerror(ri, "NULL argument to regexec");
+		hs_regerror(ri, "NULL argument to hs_regexec");
 		return(0);
 	}
 
 	/* Check validity of program. */
 	if ((unsigned char)*prog->program != MAGIC) {
-		regerror(ri, "corrupted regexp");
+		hs_regerror(ri, "corrupted regexp");
 		return(0);
 	}
 
@@ -1006,7 +1006,7 @@ char *prog;
 			return(1);	/* Success! */
 			break;
 		default:
-			regerror(ri, "regexp corruption");
+			hs_regerror(ri, "regexp corruption");
 			return(0);
 			break;
 		}
@@ -1016,7 +1016,7 @@ char *prog;
 	 * We get here only if there's trouble -- normally "case END" is
 	 * the terminating point.
 	 */
-	regerror(ri, "corrupted pointers");
+	hs_regerror(ri, "corrupted pointers");
 	return(0);
 }
 
@@ -1069,7 +1069,7 @@ char *node;
 		return(strcspn(ep->reginput, OPERAND(node)));
 		break;
 	default:		/* Oh dear.  Called inappropriately. */
-		regerror(ri, "internal error: bad call of regrepeat");
+		hs_regerror(ri, "internal error: bad call of regrepeat");
 		return(0);	/* Best compromise. */
 		break;
 	}
@@ -1213,7 +1213,7 @@ char *op;
 		p = "PLUS";
 		break;
 	default:
-		regerror(ri, "corrupted opcode");
+		hs_regerror(ri, "corrupted opcode");
 		break;
 	}
 	if (p != NULL)
@@ -1221,3 +1221,4 @@ char *op;
 	return(buf);
 }
 #endif
+

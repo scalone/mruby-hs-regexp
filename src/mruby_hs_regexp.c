@@ -53,7 +53,7 @@ hs_regexp_init(mrb_state *mrb, mrb_value self, mrb_value str, unsigned char flag
         mrb_free(mrb, reg->reg);
     }
 
-    reg->reg = regcomp(&ri, RSTRING_PTR(str));
+    reg->reg = hs_regcomp(&ri, RSTRING_PTR(str));
     if (!reg->reg){
         mrb_raisef(mrb, E_ARGUMENT_ERROR, "'%s' is an invalid regular expression because %s.",
                    RSTRING_PTR(str), ri.error_msg);
@@ -155,7 +155,7 @@ hs_regexp_match(mrb_state *mrb, mrb_value self)
     }
 
     ri.flag = reg->flag;
-    if (regexec(&ri, reg->reg, str)){
+    if (hs_regexec(&ri, reg->reg, str)){
         m = hs_regexp_get_match_data(mrb, self, str);
     }else{
         m = mrb_nil_value();
@@ -209,7 +209,7 @@ hs_regexp_casefold_p(mrb_state *mrb, mrb_value self)
 }
 
 ////////////////////////////////////////////////////////////////
-void regerror(regexp_info *ri, char *message)
+void hs_regerror(regexp_info *ri, char *message)
 {
     ri->error_msg = message;
 }
